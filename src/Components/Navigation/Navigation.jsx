@@ -3,9 +3,12 @@ import { navigationMenu} from './NavigationMenu'
 import { useNavigate } from 'react-router-dom'
 import { Avatar, Button, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useSelector } from 'react-redux';
 
 
 const Navigation = () => {
+  const {auth} =useSelector(store=>store)
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -50,8 +53,8 @@ const Navigation = () => {
           <Avatar
             alt="username" src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmW78VpyB8SVmox3yBreQwV-hSh3Cc68Z6vQdaL02ojg&s' />
           <div>
-            <span>Rishita</span>
-            <span className='opacity-70'>@rishita.g</span>
+            <span>{auth.user?.fullName}</span>
+            <span className='opacity-70'>@{auth.user?.fullName.split(" ").join("_").toLowerCase()}</span>
           </div>
 
           <Button
