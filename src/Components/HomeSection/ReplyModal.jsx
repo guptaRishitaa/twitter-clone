@@ -11,6 +11,8 @@ import TagFacesIcon from "@mui/icons-material/TagFaces";
 import TweetCard from "./TweetCard";
 import { useFormik } from 'formik';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { createTweetReply } from '../../Store/Tweet/Action';
 
 const style = {
   position: 'absolute',
@@ -26,14 +28,17 @@ const style = {
   borderRadius:4
 };
 
-export default function ReplyModal({handleClose, open}) {
+export default function ReplyModal({handleClose, open,item}) {
   const navigate=useNavigate()
  
 
   const [uploadingImage, setUploadingImage] = useState(false);
   const [selectImage, setSelectedImage] = useState("");
+  const dispatch =useDispatch();
 
   const handleSubmit=(values)=>{
+    dispatch(createTweetReply(values))
+    handleClose()
     console.log("handle submit", values)
   }
 
@@ -41,7 +46,7 @@ export default function ReplyModal({handleClose, open}) {
     initialValues:{
         content:"",
         image:"",
-        tweetId:4
+        tweetId:item?.id
     },
     onSubmit:handleSubmit
 

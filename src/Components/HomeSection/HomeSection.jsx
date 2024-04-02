@@ -1,11 +1,14 @@
 import { Avatar, Button } from "@mui/material";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import ImageIcon from "@mui/icons-material/Image";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import TagFacesIcon from "@mui/icons-material/TagFaces";
 import TweetCard from "./TweetCard";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTweets } from "../../Store/Tweet/Action";
+
 
 const validationSchema = Yup.object().shape({
   content: Yup.string().required("Tweet text is required"),
@@ -14,10 +17,18 @@ const validationSchema = Yup.object().shape({
 const HomeSection = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [selectImage, setSelectedImage] = useState("");
+  const dispatch= useDispatch();
+  const {tweet} = useSelector(store=>store);
+  console.log("tweet ",tweet)
 
   const handleSubmit = (values) => {
     console.log("values", values);
   };
+
+  useEffect(()=>{
+    dispatch(getAllTweets())
+  },[tweet.like,tweet.retweet])
+  
 
   const formik = useFormik({
     initialValues: {
@@ -101,7 +112,7 @@ const HomeSection = () => {
         </div>
       </section>
       <section>
-       {[1,1,1,1,1].map((item)=><TweetCard/>)} 
+       {tweet.tweets.map((item)=><TweetCard item={item}/>)} 
       </section>
     </div>
   );

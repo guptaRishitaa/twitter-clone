@@ -5,6 +5,7 @@ import {
   GET_ALL_TWEETS_SUCCESS,
   GET_USERS_TWEET_SUCCESS,
   LIKE_TWEET_FAILURE,
+  LIKE_TWEET_REQUEST,
   LIKE_TWEET_SUCCESS,
   REPLY_TWEET_SUCCESS,
   RETWEET_FAILURE,
@@ -33,7 +34,7 @@ export const tweetReducer = (state = initialState, action) => {
     case TWEET_CREATE_REQUEST:
     case TWEET_DELETE_REQUEST:
     case USER_LIKE_TWEET_REQUEST:
-    case LIKE_TWEET_SUCCESS:
+    case LIKE_TWEET_REQUEST:
     case RETWEET_REQUEST:
     case FIND_TWEET_BY_ID_REQUEST:
       return { ...state, loading: true, error: null };
