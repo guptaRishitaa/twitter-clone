@@ -59,6 +59,7 @@ export const getUserProfile = (jwt)=>async(dispatch)=>{
 export const findUserById = (userId)=>async(dispatch)=>{
     try {
         const {data} = await api.get(`/api/users/${userId}`)
+        console.log("find user by id", data)
        
     
         dispatch({type:FIND_USER_BY_ID_SUCCESS,payload:data})
@@ -88,7 +89,7 @@ export const updateUserProfile= (reqData)=>async(dispatch)=>{
 // giving uski userid jise the logged in user wants to follow
 export const followUserAction= (userId)=>async(dispatch)=>{
     try {
-        const {data} = await api.put(`/api/users/${userId}/`)
+        const {data} = await api.put(`/api/users/${userId}/follow`)
         console.log("followed user ",data)
        
     

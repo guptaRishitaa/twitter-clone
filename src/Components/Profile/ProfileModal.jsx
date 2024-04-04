@@ -7,6 +7,9 @@ import { useFormik } from "formik";
 import { Avatar, IconButton, TextField } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import './ProfileModal.css';
+import { useDispatch, useSelector } from "react-redux";
+import { updateUserProfile } from "../../Store/Auth/Action";
+import { uploadToCloudinary } from "../../Utils/uploadToCloudinary";
 
 const style = {
   position: "absolute",
@@ -25,16 +28,22 @@ const style = {
 export default function ProfileModal({open,handleClose}) {
 //   const [open, setOpen] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
+  const dispatch=useDispatch();
+  const [selectedImage, setSelectedImage]=React.useState("");
+  const {auth}=useSelector(store=>store);
   
   const handleSubmit = (values) => {
+    dispatch(updateUserProfile(values))
     console.log("hande Submit", values);
+    setSelectedImage("")
   };
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async(event) => {
     setUploading(true);
     const { name } = event.target;
-    const file = event.target.files[0];
+    const file = await uploadToCloudinary(event.target.files[0]);
     formik.setFieldValue(name, file);
+    setSelectedImage(file);
     setUploading(false);
   };
   const formik = useFormik({
@@ -94,7 +103,7 @@ export default function ProfileModal({open,handleClose}) {
                         height: "10rem",
                         border: "4px solid white",
                       }}
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmW78VpyB8SVmox3yBreQwV-hSh3Cc68Z6vQdaL02ojg&s"
+                      src={selectedImage || auth.user?.image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmW78VpyB8SVmox3yBreQwV-hSh3Cc68Z6vQdaL02ojg&s"}
                     />
 
                     <input

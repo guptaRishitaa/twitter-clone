@@ -35,7 +35,7 @@ const TweetDetails = () => {
       </section>
 
       <section>
-        {tweet.tweet.replyTweets.map((item)=><TweetCard item={item}/>)}
+        {tweet.tweet?.replyTweets.map((item)=><TweetCard item={item}/>)}
       </section>
     </React.Fragment>
   );
