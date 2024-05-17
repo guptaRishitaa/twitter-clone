@@ -51,8 +51,12 @@ const param = useParams();
   }
 
   useEffect(() => {
-    setOpenSnackBar(auth.updateUser);
-    console.log("Snackbar")
+    if(auth.updateUser){
+      setOpenSnackBar(true);
+      console.log("Inside Snackbar")
+    }
+    
+    
   }, [auth.updateUser]);
 
   const handleCloseSnackBar = () => setOpenSnackBar(false);
