@@ -10,6 +10,7 @@ import './ProfileModal.css';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../../Store/Auth/Action";
 import { uploadToCloudinary } from "../../Utils/uploadToCloudinary";
+import { useEffect } from "react";
 
 const style = {
   position: "absolute",
@@ -35,14 +36,17 @@ export default function ProfileModal({open,handleClose}) {
   const handleSubmit = (values) => {
     dispatch(updateUserProfile(values))
     console.log("hande Submit", values);
-    setSelectedImage("")
+    // setSelectedImage("")
+    handleClose()
   };
 
   const handleImageChange = async(event) => {
     setUploading(true);
     const { name } = event.target;
     const file = await uploadToCloudinary(event.target.files[0]);
-    formik.setFieldValue(name, file);
+    const url=await uploadToCloudinary(file,"image");
+    formik.setFieldValue(name,url);
+    // formik.setFieldValue(name, file);
     setSelectedImage(file);
     setUploading(false);
   };
@@ -57,6 +61,19 @@ export default function ProfileModal({open,handleClose}) {
     },
     onSubmit: handleSubmit,
   });
+
+  useEffect(()=>{
+
+    formik.setValues({
+      fullName: auth.user.fullName || "",
+      website: auth.user.website || "",
+      location: auth.user.location || "",
+      bio: auth.user.bio || "",
+      backgroundImage: auth.user.backgroundImage || "",
+      image: auth.user.image || "",
+    });
+
+  },[auth.user])
   return (
     <div>
    
@@ -73,9 +90,9 @@ export default function ProfileModal({open,handleClose}) {
                 <IconButton onClick={handleClose} aria-label="delete">
                   <CloseIcon />
                 </IconButton>
-                <p className="text-sm"> Edit Profile</p>
+                <p> Edit Profile</p>
               </div>
-              <Button type="submit">save</Button>
+              <Button type="submit">Save</Button>
             </div>
             <div className="hideScrollBar overflow-y-scroll overflow-x-hidden h-[80vh]">
               <React.Fragment>
@@ -83,8 +100,9 @@ export default function ProfileModal({open,handleClose}) {
                   <div className="relative">
                     <img
                       className="w-full h-[12rem] object-cover object-center"
-                      src="https://img.freepik.com/free-photo/seoraksan-mountains-is-covered-by-morning-fog-sunrise-seoul-korea_335224-313.jpg?t=st=1709248481~exp=1709252081~hmac=8528fe535ea7c819eb0f405f0e1b4ee099024772b2a7a520c41391b0cd52c9a7&w=900"
-                      alt=""
+                      src={formik.values.backgroundImage ||
+                        "https://img.freepik.com/free-photo/seoraksan-mountains-is-covered-by-morning-fog-sunrise-seoul-korea_335224-313.jpg?t=st=1709248481~exp=1709252081~hmac=8528fe535ea7c819eb0f405f0e1b4ee099024772b2a7a520c41391b0cd52c9a7&w=900"}
+                      alt="img"
                     />
                     <input
                       type="file"

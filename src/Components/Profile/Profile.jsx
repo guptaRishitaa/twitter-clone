@@ -10,20 +10,28 @@ import TweetCard from "../HomeSection/TweetCard";
 import ProfileModal from "./ProfileModal";
 import { useDispatch, useSelector } from "react-redux";
 import { findUserById, followUserAction } from "../../Store/Auth/Action";
-import { getUsersTweet } from "../../Store/Tweet/Action";
+import { findTweetsByLikesContainsUser, getUsersTweet } from "../../Store/Tweet/Action";
+import SnackbarComponent from "../Snackbar/SnackbarComponent";
 
 const Profile = () => {
     const [tabValue, setTabValue]=useState("1")
-  const navigate = useNavigate();
-const [openProfileModal, setOpenProfileModal]=useState(false)
+  const [openProfileModal, setOpenProfileModal]=useState();
   const handleOpenProfileModel = () => setOpenProfileModal(true);
-  const handleClose = () => setOpenProfileModal(false);
+  const handleCloseProfileModal = () => setOpenProfileModal(false);
   const {auth, tweet} = useSelector(store=>store)
   const dispatch =useDispatch();
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+
+  const navigate = useNavigate();
+
 // to acess the id in params
 const {id} = useParams()
+const param = useParams();
 
-  const handleBack = () => navigate(-1);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
 
   const handleFollowUser = () => {
@@ -35,12 +43,19 @@ const {id} = useParams()
     setTabValue(newValue)
 
     if(newValue===4){
-        console.log("tab 4")
+      dispatch(findTweetsByLikesContainsUser(param.id));
     }
     else if(newValue===1){
-        console.log("users tweets")
+      dispatch(getUsersTweet(param.id));
     }
   }
+
+  useEffect(() => {
+    setOpenSnackBar(auth.updateUser);
+    console.log("Snackbar")
+  }, [auth.updateUser]);
+
+  const handleCloseSnackBar = () => setOpenSnackBar(false);
 
   useEffect(()=>{
 
@@ -167,7 +182,15 @@ const {id} = useParams()
       </section>
 
       <section>
-        <ProfileModal handleClose={handleClose} open={openProfileModal}/>
+        <ProfileModal handleClose={handleCloseProfileModal} open={openProfileModal}/>
+      </section>
+
+      <section>
+        <SnackbarComponent
+          handleClose={handleCloseSnackBar}
+          open={openSnackBar}
+          message={"user updated successfully"}
+        />
       </section>
     </div>
   );
