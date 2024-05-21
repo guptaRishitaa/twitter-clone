@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate, useParams } from "react-router-dom";
-import { Avatar, Box, Button, Tab, Tabs } from "@mui/material";
+import { Avatar, Backdrop, Box, Button, CircularProgress, Tab, Tabs } from "@mui/material";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import { BusinessCenterSharp } from "@mui/icons-material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
@@ -18,7 +19,7 @@ const Profile = () => {
   const [openProfileModal, setOpenProfileModal]=useState();
   const handleOpenProfileModel = () => setOpenProfileModal(true);
   const handleCloseProfileModal = () => setOpenProfileModal(false);
-  const {auth, tweet} = useSelector(store=>store)
+  const {auth, tweet, theme} = useSelector(store=>store)
   const dispatch =useDispatch();
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
@@ -63,12 +64,17 @@ const param = useParams();
 
   useEffect(()=>{
 
-    dispatch(findUserById(id))
-    dispatch(getUsersTweet(id))
+    dispatch(findUserById(id));
+    dispatch(getUsersTweet(id));
+    dispatch(findTweetsByLikesContainsUser(id));
   },[id])
+
+
   return (
     <div>
-      <section className={`bg-white z-50 flex items-center sticky top-0 bg-opacity-95`}>
+      <section className={`bg-white z-50 flex items-center sticky top-0 bg-opacity-95  ${
+          theme.currentTheme === "light" ? "bg-white" : "bg-[#0D0D0D]"
+        }`}>
         <KeyboardBackspaceIcon
           className="cursor-pointer"
           onClick={handleBack}
@@ -78,7 +84,7 @@ const param = useParams();
       <section>
         <img
           className="w-[100%] h-[15rem] object-cover"
-          src="https://img.freepik.com/free-photo/seoraksan-mountains-is-covered-by-morning-fog-sunrise-seoul-korea_335224-313.jpg?t=st=1709248481~exp=1709252081~hmac=8528fe535ea7c819eb0f405f0e1b4ee099024772b2a7a520c41391b0cd52c9a7&w=900"
+          src={auth.findUser?.backgroundImage ||  "https://img.freepik.com/free-photo/seoraksan-mountains-is-covered-by-morning-fog-sunrise-seoul-korea_335224-313.jpg?t=st=1709248481~exp=1709252081~hmac=8528fe535ea7c819eb0f405f0e1b4ee099024772b2a7a520c41391b0cd52c9a7&w=900"}
           alt=""
         />
       </section>
@@ -87,7 +93,7 @@ const param = useParams();
         <div className="flex justify-between items-start mt-5 h-[5rem]">
           <Avatar
             className="transform -translate-y-24"
-            alt="rishita"
+            alt="avatar"
             src={auth.findUser?.image}
             sx={{ width: "10rem", height: "10rem", border: "4px solid white" }}
           />
@@ -115,7 +121,7 @@ const param = useParams();
 
         <div className="flex items-center">
           <h1 className="font-bold text-lg"> {auth.findUser?.fullName}</h1>
-          {true && (
+          {auth.findUser?.verified && (
             <img
               className="ml-2 w-5 h-5"
               src="https://img.freepik.com/premium-vector/verification-checkmark-blue-circle-star-vector-icon-isolated-white-background_261737-745.jpg?size=338&ext=jpg&ga=GA1.1.384202588.1708904478&semt=sph"
@@ -124,14 +130,14 @@ const param = useParams();
           )}
         </div>
         <div>
-          <h1 className="text-gray-500">@{auth.findUser?.fullName.split(" ").join("_").toLowerCase()}</h1>
+          <h1 className="text-gray-500">@{auth.findUser?.fullName?.split(" ").join("_").toLowerCase()}</h1>
         </div>
 
         <div className="mt-2 space-y-3">
           <p> {auth.findUser?.bio}</p>
           <div className="py-1 flex space-x-5">
             <div className="flex items-center text-gray-500">
-              <BusinessCenterIcon />
+              <BusinessCenterSharp />
               <p className="ml-2"> Education</p>
             </div>
 
@@ -148,7 +154,7 @@ const param = useParams();
 
           <div className="flex items-center space-x-5">
           
-          <div className="felx items-center space-x-1 font-semibold">
+          <div className="flex items-center space-x-1 font-semibold">
           <span>{auth.findUser?.following?.length}</span>
                 <span className="text-gray-500">Following</span>
 
@@ -165,7 +171,7 @@ const param = useParams();
       </section>
 
       <section className="py-5">
-      <Box sx={{ width: '100%', typography: 'body1' }}>
+      <Box sx={{ width: '100%', typography: 'body1',  marginTop: "20px" }}>
       <TabContext value={tabValue}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleTabChange} aria-label="lab API tabs example">
@@ -180,13 +186,24 @@ const param = useParams();
         </TabPanel>
         <TabPanel value="2">Replies</TabPanel>
         <TabPanel value="3">Media</TabPanel>
-        <TabPanel value="4">Likes</TabPanel>
+        <TabPanel value="4">  {tweet.likedTweets?.map((item) => (
+                <TweetCard item={item} />
+              ))}</TabPanel>
       </TabContext>
     </Box>
       </section>
 
       <section>
         <ProfileModal handleClose={handleCloseProfileModal} open={openProfileModal}/>
+      </section>
+
+      <section>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={tweet.loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </section>
 
       <section>

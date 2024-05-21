@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -10,8 +10,8 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import ReplyModal from "./ReplyModal";
-import { useDispatch } from "react-redux";
-import { createReTweet, likeTweet } from "../../Store/Tweet/Action";
+import { useDispatch, useSelector } from "react-redux";
+import { createReTweet, deleteTweet, likeTweet } from "../../Store/Tweet/Action";
 
 const TweetCard = ({item}) => {
   const navigate = useNavigate();
@@ -21,8 +21,23 @@ const TweetCard = ({item}) => {
   const handleOpenReplyModel = () => setOpenReplyModal(true);
   const handleCloseReplyModal = () => setOpenReplyModal(false);
   const dispatch = useDispatch();
+  const {auth} = useSelector((store)=>store);
+  const [isLiked, setIsLiked] = useState(item.liked);
+  const [likes, setLikes] = useState(item.totalLikes);
+  const [isRetweet, setIsRetweet] = useState(
+    item.retweetUserId.includes(auth.user.id)
+  );
+  const [retweet, setRetweet] = useState(item.totalRetweets);
+  const location = useLocation();
 
+  const openDeleteMenu = Boolean(anchorEl);
 
+  const handleOpenDeleteMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseDeleteMenu = () => {
+    setAnchorEl(null);
+  };
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -31,33 +46,41 @@ const TweetCard = ({item}) => {
   };
 
   const handleDeleteTweet = () => {
+    dispatch(deleteTweet(item.id))
     console.log("delete tweet");
-    handleClose();
+    handleCloseDeleteMenu();
   };
 
 
   const handleCreateRetweets = () => {
     dispatch(createReTweet(item?.id))
+    setRetweet(isRetweet ? retweet - 1 : retweet + 1);
+    setIsRetweet(!retweet);
     console.log("handle create retweets");
   };
 
-  const handleLikeTweet = () => {
+  const handleLikeTweet = (num) => {
     dispatch(likeTweet(item?.id))
+    setIsLiked(!!isLiked);
+    setLikes(likes+num);
     console.log("handle like tweet");
   };
+
+  const handleNavigateToTweetDetail = () => navigate(`/tweet/${item.id}`);
   return (
     <React.Fragment>
-      {/* <div className='flex items-center font-semibold text-gray-700 py-2'>
+     { auth.user?.id !== item.user.id &&
+        location.pathname === `/profile/${auth.user?.id}` && (<div className='flex items-center font-semibold text-gray-700 py-2'>
             <RepeatIcon/>
-
-        </div> */}
+            <p className="ml-3">You Retweet</p>
+        </div>)}
 
       <div className="flex space-x-5">
         <Avatar
           onClick={() => navigate(`/profile/${item?.user.id}`)}
           className="cursor-pointer"
           alt="username"
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmW78VpyB8SVmox3yBreQwV-hSh3Cc68Z6vQdaL02ojg&s"
+          src={item.user.image}
         />
 
         <div className="w-full">

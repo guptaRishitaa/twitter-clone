@@ -1,6 +1,6 @@
 import axios from "axios"
 import { API_BASE_URL, api } from "../../config/api"
-import { FIND_USER_BY_ID_FAILURE, FIND_USER_BY_ID_SUCCESS, FOLLOW_USER_FAILURE, FOLLOW_USER_SUCCESS, GET_USER_PROFILE_FAILURE, GET_USER_PROFILE_SUCCESS, LOGIN_USER_FAILURE, LOGIN_USER_SUCCESS, LOGOUT, REGISTER_USER_REQUEST, REGISTER_USER_SUCCESS, UPDATE_USER_FAILURE, UPDATE_USER_SUCCESS } from "./ActionType"
+import { FIND_USER_BY_ID_FAILURE, FIND_USER_BY_ID_REQUEST, FIND_USER_BY_ID_SUCCESS, FOLLOW_USER_FAILURE, FOLLOW_USER_SUCCESS, GET_USER_PROFILE_FAILURE, GET_USER_PROFILE_SUCCESS, GOOGLE_LOGIN_FAILURE, GOOGLE_LOGIN_REQUEST, GOOGLE_LOGIN_SUCCESS, LOGIN_USER_FAILURE, LOGIN_USER_SUCCESS, LOGOUT, REGISTER_USER_REQUEST, REGISTER_USER_SUCCESS, SEARCH_USER_FAILURE, SEARCH_USER_REQUEST, SEARCH_USER_SUCCESS, UPDATE_USER_FAILURE, UPDATE_USER_SUCCESS } from "./ActionType"
 
 export const loginUser = (loginData)=>async(dispatch)=>{
     try {
@@ -19,6 +19,24 @@ export const loginUser = (loginData)=>async(dispatch)=>{
         
     }
 }
+
+// /signin/google
+
+export const loginWithGoogleAction = (data) => async (dispatch) => {
+    dispatch({type:GOOGLE_LOGIN_REQUEST});
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/signin/google`, data);
+      const user = response.data;
+      console.log("login with google user -: ", user);
+      if (user.jwt) {
+        localStorage.setItem("jwt", user.jwt);
+      }
+      dispatch({type:GOOGLE_LOGIN_SUCCESS,payload:user.jwt});
+    } catch (error) {
+      dispatch({type:GOOGLE_LOGIN_FAILURE, payload: error.message || "An error occurred during login."});
+    }
+  };
+
 
 export const registerUser = (registerData)=>async(dispatch)=>{
     try {
@@ -57,6 +75,7 @@ export const getUserProfile = (jwt)=>async(dispatch)=>{
 
 
 export const findUserById = (userId)=>async(dispatch)=>{
+    dispatch({type:FIND_USER_BY_ID_REQUEST})
     try {
         const {data} = await api.get(`/api/users/${userId}`)
         console.log("find user by id", data)
@@ -70,6 +89,21 @@ export const findUserById = (userId)=>async(dispatch)=>{
         
     }
 }
+
+export const searchUser = (query) => async (dispatch) => {
+    dispatch({type:SEARCH_USER_REQUEST})
+    try {
+      const response = await api.get(`/api/users/search?query=${query}`);
+      const users = response.data;
+      console.log("search result -: ", users);
+     
+      dispatch({type:SEARCH_USER_SUCCESS,payload:users});
+    } catch (error) {
+      dispatch(
+        {type:SEARCH_USER_FAILURE,error:error.message}
+      );
+    }
+  };
 
 export const updateUserProfile= (reqData)=>async(dispatch)=>{
     try {

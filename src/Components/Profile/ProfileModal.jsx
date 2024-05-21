@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../../Store/Auth/Action";
 import { uploadToCloudinary } from "../../Utils/uploadToCloudinary";
 import { useEffect } from "react";
+import BackdropComponent from "../Backdrop/Backdrop";
 
 const style = {
   position: "absolute",
@@ -182,14 +183,16 @@ export default function ProfileModal({open,handleClose}) {
                   }
                   helperText={formik.touched.location && formik.errors.location}
                 />
+                </div>
 
                 <div className="my-3">
                   <p className="text-lg"> Birth Date . Edit</p>
                   <p className="text-2xl">July 27, 2000</p>
                 </div>
                 <p className="py-3 text-lg">Edit Professional Profile</p>
-              </div>
+           
             </div>
+            <BackdropComponent open={uploading}/>
           </form>
         </Box>
       </Modal>
