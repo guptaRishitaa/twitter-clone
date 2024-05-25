@@ -6,6 +6,7 @@ import Modal from '@mui/material/Modal';
 import SigninForm from './SigninForm';
 import SignupForm from './SignupForm';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const style = {
   position: 'absolute',
@@ -24,6 +25,7 @@ export default function AuthModal({open, handleClose}) {
 
     const location=useLocation()
     const navigate=useNavigate();
+    const {auth}=useSelector(store=>store);
 
     const handleNavigate=()=>{
         const path=location.pathname==="/signup"?"/signin":"/signup"
@@ -31,6 +33,12 @@ export default function AuthModal({open, handleClose}) {
 
 
     }
+
+    React.useEffect(()=>{
+      if(auth.user?.fullName){
+        handleClose()
+      }
+    },[auth.user])
  
   return (
     <div>

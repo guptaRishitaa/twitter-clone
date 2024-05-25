@@ -1,13 +1,33 @@
 import { Button, Grid } from '@mui/material'
 import { GoogleLogin } from '@react-oauth/google'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AuthModal from './AuthModel'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginWithGoogleAction } from '../../Store/Auth/Action'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Authentication = () => {
 
   const [openAuthModel, setOpenAuthModel]=useState(false);
   const handleOpenAuthModel=()=>setOpenAuthModel(true);
   const handleCloseAuthModel=()=>setOpenAuthModel(false)
+  const {auth} = useSelector((store)=>store)
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const loginWithGoole = (res) => {
+    console.log("res : ", res);
+    dispatch(loginWithGoogleAction(res));
+    // return
+  };
+
+  useEffect(() => {
+    if (location.pathname === "/signin" || location.pathname === "/signup") {
+      setOpenAuthModel(true);
+    }
+  }, [location.pathname]);
+
   return (
     <div>
       <Grid className='overflow-y-hidden' container>
@@ -33,18 +53,30 @@ const Authentication = () => {
 
         </Grid>
 
-        <Grid className='px-10' lg={5} xs={12}>
-          <h1 className='mt-10 font-bold text-7xl'> Happening Now</h1>
+        <Grid className='px-10' item lg={5} xs={12}>
+        <div className="py-10">
+            <img
+              className="w-16"
+              src="https://pbs.twimg.com/media/F1iAD_iaYAAu7I3?format=jpg&name=small"
+              alt=""
+            />
+          </div>
+          <h1 className='font-bold text-7xl'> Happening Now</h1>
           <h1 className='font-bold text-3xl py-16'> Join X today </h1>
 
           <div className='w-[60%]'>
             <div className='w-full'>
 
-              <GoogleLogin width={330}/>
+              <GoogleLogin width={330}
+              onSuccess={loginWithGoole}
+              onError={() => {
+                console.log("Login Failed");
+              }}/>
               <p className='py-5 text-center'> OR</p>
 
               <Button onClick={handleOpenAuthModel} fullWidth variant='contained' size='large' sx={
                 {
+                  width: "100%",
                   borderRadius:"29px",
                   py:"7px",
                 }
@@ -56,7 +88,7 @@ const Authentication = () => {
             </div>
 
             <div className='mt-10'>
-              <h1 className='font-bold text-xl mb-5'>Already have account?</h1>
+              <h1 className='font-bold text-xl mb-5'>Already have Account?</h1>
             <Button onClick={handleOpenAuthModel} fullWidth variant='outlined' size='large' sx={
                 {
                   borderRadius:"29px",

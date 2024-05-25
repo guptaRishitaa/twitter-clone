@@ -85,7 +85,7 @@ export const tweetReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: null,
-        tweets: state.tweets.filter((tweet) => tweet.id != action.payload),
+        tweets: state.tweets.filter((tweet) => tweet.id !== action.payload),
       };
 
     case RETWEET_SUCCESS:

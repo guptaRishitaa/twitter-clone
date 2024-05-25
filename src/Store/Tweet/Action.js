@@ -123,7 +123,7 @@ export const likeTweet=(tweetId)=>async(dispatch)=>{
 
 export const deleteTweet=(tweetId)=>async(dispatch)=>{
     try {
-        const {data} = await api.post(`/api/tweets/${tweetId}`);
+        const {data} = await api.delete(`/api/tweets/${tweetId}`);
         console.log("deleted tweet  : ", data)
         dispatch({type:TWEET_DELETE_SUCCESS, payload:tweetId})
         

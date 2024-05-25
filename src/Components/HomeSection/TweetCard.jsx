@@ -59,14 +59,18 @@ const TweetCard = ({item}) => {
     console.log("handle create retweets");
   };
 
-  const handleLikeTweet = (num) => {
+  const handleLikeTweet = () => {
     dispatch(likeTweet(item?.id))
-    setIsLiked(!!isLiked);
-    setLikes(likes+num);
+    // setIsLiked(!isLiked);
+    // setLikes(likes+num);
     console.log("handle like tweet");
   };
 
-  const handleNavigateToTweetDetail = () => navigate(`/tweet/${item.id}`);
+  const handleNavigateToTweetDetail = () => {
+    console.log("handleNavigate tweetcard")
+    navigate(`/tweet/${item.id}`);}
+
+  
   return (
     <React.Fragment>
      { auth.user?.id !== item.user.id &&
@@ -85,48 +89,55 @@ const TweetCard = ({item}) => {
 
         <div className="w-full">
           <div className="flex justify-between items-center">
-            <div className="flex cursor-pointer items-center space-x-2">
+            <div  onClick={() => navigate(`/profile/${item.user.id}`)}
+             className="flex cursor-pointer items-center space-x-2">
               <span className="font-semibold">{item?.user?.fullName}</span>
               <span className="text-gray-600">@{item?.user?.fullName.split(" ").join("_").toLowerCase()} . 2m</span>
+              {item.user.verified && (
               <img
                 className="ml-2 w-5 h-5"
                 src="https://img.freepik.com/premium-vector/verification-checkmark-blue-circle-star-vector-icon-isolated-white-background_261737-745.jpg?size=338&ext=jpg&ga=GA1.1.384202588.1708904478&semt=sph"
                 alt=""
-              />
+              />)}
             </div>
             <div>
               <Button
-                id="basic-button"
-                aria-controls={open ? "basic-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? "true" : undefined}
-                onClick={handleClick}
+               
+                onClick={handleOpenDeleteMenu}
               >
-                <MoreHorizIcon />
+                <MoreHorizIcon
+                 id="basic-button"
+                 aria-controls={openDeleteMenu ? "basic-menu" : undefined}
+                 aria-haspopup="true"
+                 aria-expanded={openDeleteMenu ? "true" : undefined} />
               </Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
+                open={openDeleteMenu}
+                onClose={handleCloseDeleteMenu}
                 MenuListProps={{
                   "aria-labelledby": "basic-button",
                 }}
               >
-                <MenuItem onClick={handleDeleteTweet}>Delete</MenuItem>
-                <MenuItem onClick={handleDeleteTweet}>Edit</MenuItem>
+                {item.user.id ===auth.user.id && <MenuItem onClick={handleDeleteTweet}> Delete </MenuItem>}
+                <MenuItem onClick={()=>navigate(`/tweet/${item.id}`)}>Details</MenuItem>
               </Menu>
             </div>
           </div>
 
           <div className="mt-2">
-            <div onClick={()=>navigate(`/tweet/${item?.id}`)} className="cursor-pointer">
+            <div onClick={handleNavigateToTweetDetail} className="cursor-pointer">
               <p className="mb-2 p-0">{item?.content}</p>
-              <img
+             { item.image && <img
                 className="w-[28rem] border border-gray-400 p-5 rounded-md"
                 src={item?.image}
                 alt=""
-              />
+              />}
+
+{item.video &&  <div className="flex flex-col items-center w-full border border-gray-400 rounded-md">
+<video className="max-h-[40rem] p-5"  controls src={item.video}/>
+              </div>}
             </div>
             <div className="py-5 flex flex-wrap justify-between items-center">
               <div className="space-x-3 flex items-center text-gray-600">
@@ -134,7 +145,7 @@ const TweetCard = ({item}) => {
                   className="cursor-pointer"
                   onClick={handleOpenReplyModel}
                 />
-                <p>{item?.totalReplies}</p>
+               {item.totalReplies>0 &&<p>{item?.totalReplies}</p>}
               </div>
 
               <div

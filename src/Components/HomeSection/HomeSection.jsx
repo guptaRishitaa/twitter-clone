@@ -56,20 +56,22 @@ const HomeSection = () => {
 
   const handleSelectImage = async(event) => {
     setUploadingImage(true);
-    const imgUrl = await uploadToCloudinary(event.target.files[0]);
+    const imgUrl = await uploadToCloudinary(event.target.files[0], "image");
     formik.setFieldValue("image", imgUrl);
     setSelectedImage(imgUrl);
     setUploadingImage(false);
   };
 
   const handleSelectVideo = async (event) => {
+
     setUploadingImage(true);
+    // console.log("handle select video 1")
     const videoUrl = await uploadToCloudinary(event.target.files[0],"video");
     formik.setFieldValue("video", videoUrl);
     setSelectedVideo(videoUrl)
     setUploadingImage(false);
 
-    // console.log()
+    console.log("handle select video")
   };
 
   const handleEmojiClick=(value)=>{

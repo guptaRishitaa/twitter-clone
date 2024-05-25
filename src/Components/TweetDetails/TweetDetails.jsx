@@ -12,7 +12,7 @@ const TweetDetails = () => {
   const handleBack = () => navigate(-1);
   const dispatch=useDispatch();
   const {id} =useParams()
-  const {tweet}=useSelector(store=>store)
+  const {tweet, theme}=useSelector(store=>store)
 
   useEffect(()=>{
     if(id){
@@ -21,16 +21,18 @@ const TweetDetails = () => {
   },[])
   return (
     <React.Fragment>
-      <section className={`bg-white z-50 flex items-center sticky top-0 bg-opacity-95`}>
+      <section className={`z-50 flex items-center sticky top-0 ${
+          theme.currentTheme === "light" ? "bg-white" : "bg-[#0D0D0D]"
+        } bg-opacity-95`}>
         <KeyboardBackspaceIcon
           className="cursor-pointer"
           onClick={handleBack}
         />
-        <h1 className="py-5 text-xl font-bold opacity-90 ml-5">Tweet</h1>
+        <h1 className="py-5 text-xl font-bold opacity-90 ml-5">{"Tweet"}</h1>
       </section>
 
       <section>
-        <TweetCard item={tweet.tweet}/>
+        {tweet.tweet && <TweetCard item={tweet.tweet}/>}
         <Divider sx={{margin:"2rem 0rem"}}/>
       </section>
 
